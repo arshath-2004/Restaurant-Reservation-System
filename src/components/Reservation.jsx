@@ -13,6 +13,8 @@ const Reservation = () => {
     message: ''
   });
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const hourOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const minuteOptions = ['00', '15', '30', '45'];
   const ampmOptions = ['AM', 'PM'];
@@ -97,8 +99,8 @@ const Reservation = () => {
     bookings.push(newBooking);
     localStorage.setItem('restaurant_bookings', JSON.stringify(bookings));
 
-    alert('Thank you for your reservation request! We will confirm shortly.');
-    setFormData({ name: '', phone: '', email: '', date: '', timeFrom: '', timeTo: '', guests: 2, seat: 'Table', message: '' });
+    setIsSubmitted(true);
+    setFormData({ name: '', phone: '', email: '', date: '', timeFrom: '19:00', timeTo: '21:00', guests: 2, seat: 'Table', message: '' });
   };
 
   return (
@@ -108,157 +110,168 @@ const Reservation = () => {
           <h3 className="section-subtitle">Book a Table</h3>
           <h2 className="section-title">Make a <span className="heading-gold">Reservation</span></h2>
 
-          <form className="reservation-form" onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="form-group">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group">
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Phone Number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
+          {isSubmitted ? (
+            <div className="success-message-container fade-in">
+              <div className="success-icon">✓</div>
+              <h3 className="heading-gold">Booking Request Sent</h3>
+              <p>Thank you for choosing us! Your reservation for <strong>{getTimeParts(formData.date).hour}</strong> is now <strong>PENDING</strong>. We will confirm your seat shortly via email or phone.</p>
+              <button onClick={() => setIsSubmitted(false)} className="btn-primary" style={{ marginTop: '20px' }}>
+                Make Another Booking
+              </button>
             </div>
-            <div className="form-group">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="form-control"
-              />
-            </div>
-            <div className="form-row">
-              <div className="form-group">
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group time-selector-group">
-                <label className="selector-label">From</label>
-                <div className="time-picker-custom">
-                  <select
-                    value={getTimeParts(formData.timeFrom).hour}
-                    onChange={(e) => handleTimeChange('timeFrom', 'hour', e.target.value)}
-                    className="time-select"
-                  >
-                    {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
-                  </select>
-                  <select
-                    value={getTimeParts(formData.timeFrom).minute}
-                    onChange={(e) => handleTimeChange('timeFrom', 'minute', e.target.value)}
-                    className="time-select"
-                  >
-                    {minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                  <select
-                    value={getTimeParts(formData.timeFrom).ampm}
-                    onChange={(e) => handleTimeChange('timeFrom', 'ampm', e.target.value)}
-                    className="time-select ampm"
-                  >
-                    {ampmOptions.map(a => <option key={a} value={a}>{a}</option>)}
-                  </select>
+          ) : (
+            <form className="reservation-form" onSubmit={handleSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Your Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="form-control"
+                  />
+                </div>
+                <div className="form-group">
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    className="form-control"
+                  />
                 </div>
               </div>
-              <div className="form-group time-selector-group">
-                <label className="selector-label">To</label>
-                <div className="time-picker-custom">
-                  <select
-                    value={getTimeParts(formData.timeTo).hour}
-                    onChange={(e) => handleTimeChange('timeTo', 'hour', e.target.value)}
-                    className="time-select"
-                  >
-                    {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
-                  </select>
-                  <select
-                    value={getTimeParts(formData.timeTo).minute}
-                    onChange={(e) => handleTimeChange('timeTo', 'minute', e.target.value)}
-                    className="time-select"
-                  >
-                    {minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                  <select
-                    value={getTimeParts(formData.timeTo).ampm}
-                    onChange={(e) => handleTimeChange('timeTo', 'ampm', e.target.value)}
-                    className="time-select ampm"
-                  >
-                    {ampmOptions.map(a => <option key={a} value={a}>{a}</option>)}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="form-row">
               <div className="form-group">
-                <div className="selector-label">Number of Guests</div>
-                <div className="guest-selector">
-                  {guestOptions.map(num => (
-                    <button
-                      key={num}
-                      type="button"
-                      className={`guest-chip ${formData.guests === num ? 'active' : ''}`}
-                      onClick={() => setFormData({ ...formData, guests: num })}
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="form-control"
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    required
+                    className="form-control"
+                  />
+                </div>
+                <div className="form-group time-selector-group">
+                  <label className="selector-label">From</label>
+                  <div className="time-picker-custom">
+                    <select
+                      value={getTimeParts(formData.timeFrom).hour}
+                      onChange={(e) => handleTimeChange('timeFrom', 'hour', e.target.value)}
+                      className="time-select"
                     >
-                      {num}{num === 6 ? '+' : ''}
-                    </button>
-                  ))}
+                      {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                    <select
+                      value={getTimeParts(formData.timeFrom).minute}
+                      onChange={(e) => handleTimeChange('timeFrom', 'minute', e.target.value)}
+                      className="time-select"
+                    >
+                      {minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                    <select
+                      value={getTimeParts(formData.timeFrom).ampm}
+                      onChange={(e) => handleTimeChange('timeFrom', 'ampm', e.target.value)}
+                      className="time-select ampm"
+                    >
+                      {ampmOptions.map(a => <option key={a} value={a}>{a}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group time-selector-group">
+                  <label className="selector-label">To</label>
+                  <div className="time-picker-custom">
+                    <select
+                      value={getTimeParts(formData.timeTo).hour}
+                      onChange={(e) => handleTimeChange('timeTo', 'hour', e.target.value)}
+                      className="time-select"
+                    >
+                      {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                    <select
+                      value={getTimeParts(formData.timeTo).minute}
+                      onChange={(e) => handleTimeChange('timeTo', 'minute', e.target.value)}
+                      className="time-select"
+                    >
+                      {minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                    <select
+                      value={getTimeParts(formData.timeTo).ampm}
+                      onChange={(e) => handleTimeChange('timeTo', 'ampm', e.target.value)}
+                      className="time-select ampm"
+                    >
+                      {ampmOptions.map(a => <option key={a} value={a}>{a}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <div className="selector-label">Number of Guests</div>
+                  <div className="guest-selector">
+                    {guestOptions.map(num => (
+                      <button
+                        key={num}
+                        type="button"
+                        className={`guest-chip ${formData.guests === num ? 'active' : ''}`}
+                        onClick={() => setFormData({ ...formData, guests: num })}
+                      >
+                        {num}{num === 6 ? '+' : ''}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <div className="selector-label">Select Seating</div>
+                  <div className="seat-selector">
+                    {seatOptions.map(option => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        className={`seat-chip ${formData.seat === option.id ? 'active' : ''}`}
+                        onClick={() => setFormData({ ...formData, seat: option.id })}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
               <div className="form-group">
-                <div className="selector-label">Select Seating</div>
-                <div className="seat-selector">
-                  {seatOptions.map(option => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      className={`seat-chip ${formData.seat === option.id ? 'active' : ''}`}
-                      onClick={() => setFormData({ ...formData, seat: option.id })}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
+                <textarea
+                  name="message"
+                  placeholder="Special Requests (Optional)"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="form-control"
+                  rows="3"
+                  style={{ resize: 'none' }}
+                ></textarea>
               </div>
-            </div>
 
-            <div className="form-group">
-              <textarea
-                name="message"
-                placeholder="Special Requests (Optional)"
-                value={formData.message}
-                onChange={handleChange}
-                className="form-control"
-                rows="3"
-                style={{ resize: 'none' }}
-              ></textarea>
-            </div>
-
-            <button type="submit" className="btn-primary" style={{ marginTop: '20px', width: '100%' }}>
-              Confirm Booking
-            </button>
-          </form>
+              <button type="submit" className="btn-primary" style={{ marginTop: '20px', width: '100%' }}>
+                Confirm Booking
+              </button>
+            </form>
+          )}
         </div>
       </div>
 
@@ -333,6 +346,30 @@ const Reservation = () => {
         .time-select.ampm {
           color: var(--primary-color);
           font-weight: bold;
+        }
+
+        .success-message-container {
+          padding: 40px;
+          animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-icon {
+          width: 80px;
+          height: 80px;
+          background: var(--primary-color);
+          color: #000;
+          font-size: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          margin: 0 auto 20px;
+          box-shadow: 0 10px 30px rgba(224, 179, 34, 0.4);
+        }
+
+        @keyframes scaleUp {
+          from { transform: scale(0.8); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
         }
 
         .selector-label {
